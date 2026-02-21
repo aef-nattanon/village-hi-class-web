@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username   = "root";
 $password   = "";
-$dbname     = "village_main_db2";
+$dbname     = "village_main_db";
 
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8", $username, $password);
