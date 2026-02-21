@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:\\\\xampp\\\\htdocs\\\\ro_village\" log --format=\"%H %s\")",
+      "Bash(git -C \"C:\\\\xampp\\\\htdocs\\\\ro_village\" show 8c28675 --stat)",
+      "Bash(git -C \"C:\\\\xampp\\\\htdocs\\\\ro_village\" ls-files)",
+      "Bash(wc:*)",
+      "Bash(find:*)"
+    ]
+  }
+}
