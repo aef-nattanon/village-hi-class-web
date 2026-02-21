@@ -1,0 +1,52 @@
+--- NEW REQUEST ---
+*   Trying 172.67.137.113:443...
+* Connected to developer.easyslip.com (172.67.137.113) port 443
+* ALPN: curl offers h2,http/1.1
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=easyslip.com
+*  start date: Jan 11 10:12:40 2026 GMT
+*  expire date: Apr 11 11:10:09 2026 GMT
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://developer.easyslip.com/api/v1/verify
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: developer.easyslip.com]
+* [HTTP/2] [1] [:path: /api/v1/verify]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [authorization: Bearer 81b702bd-0977-443e-ab23-1f110cfb3d4d]
+* [HTTP/2] [1] [content-length: 132344]
+* [HTTP/2] [1] [content-type: multipart/form-data; boundary=------------------------BZpE6LqSBcRqbBOrEyW9tn]
+> POST /api/v1/verify HTTP/2
+Host: developer.easyslip.com
+Accept: */*
+Authorization: Bearer 81b702bd-0977-443e-ab23-1f110cfb3d4d
+Content-Length: 132344
+Content-Type: multipart/form-data; boundary=------------------------BZpE6LqSBcRqbBOrEyW9tn
+
+* old SSL session ID is stale, removing
+* We are completely uploaded and fine
+< HTTP/2 400 
+< date: Fri, 30 Jan 2026 09:15:02 GMT
+< content-type: application/json; charset=utf-8
+< content-length: 40
+< cf-ray: 9c5fdcc8ab6f9c2f-SIN
+< access-control-allow-origin: *
+< etag: W/"28-lskPk/LUDdB4SCO8mYWavhDnu9w"
+< strict-transport-security: max-age=31536000; includeSubDomains; preload
+< vary: Accept-Encoding
+< vary: Accept-Encoding
+< x-request-id: dd4da3dd-7d5c-4778-a2f9-ca628f0b6a91
+< cf-cache-status: DYNAMIC
+< set-cookie: __cf_bm=HKvXAioxbutqWQAo9.X0NP.FyXi3tRUsRdLCg_w3hEg-1769764502-1.0.1.1-eypBwZSj3tcB5Rt2.O8dN58R74peK_XVzGmJm.k31tPO1HBSUYdiYi_KDLI7oDxr0qHOOsnLrKV7N3dtnGF6K0hRo6.mDBfa6MfOttuWwbmGXJd270pAglCJtBVrmuJf; path=/; expires=Fri, 30-Jan-26 09:45:02 GMT; domain=.developer.easyslip.com; HttpOnly; Secure
+< x-content-type-options: nosniff
+< server: cloudflare
+< alt-svc: h3=":443"; ma=86400
+< 
+* Connection #0 to host developer.easyslip.com left intact
+
+Response: {"status":400,"message":"invalid_image"}
+

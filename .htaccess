@@ -1,0 +1,12 @@
+DirectoryIndex welcome.php index.php
+
+RewriteEngine On
+
+# 1. ถ้าเป็นไฟล์หรือโฟลเดอร์จริงๆ ให้ข้ามไปเลย
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# 2. กฏสำหรับการซ่อน .php (สำคัญ)
+# ถ้าหาไฟล์ชื่อนั้น + .php เจอ ให้เรียกไฟล์นั้นมาทำงาน
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
