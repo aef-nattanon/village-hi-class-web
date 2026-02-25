@@ -1,15 +1,22 @@
 <?php
-// 1. ตั้งค่าโฟลเดอร์ที่เก็บไฟล์ .txt ทั้งหมด (เอาโฟลเดอร์ mobs มาวางไว้ระดับเดียวกับไฟล์นี้)
-$folder_path = './mobs/dungeons'; 
+// 1. ตั้งค่าโฟลเดอร์ที่เก็บไฟล์ .txt (เพิ่มโฟลเดอร์ fields เข้ามาแล้ว)
+// ** อย่าลืมเอาโฟลเดอร์ dungeons และ fields มาวางไว้ในโฟลเดอร์ mobs ระดับเดียวกับไฟล์นี้ด้วยนะครับ
+$folders = ['./mobs/dungeons', './mobs/fields']; 
 $sql_output_file = 'mob_spawn.sql';
 
 $spawn_data = [];
+$files = [];
 
-// ดึงรายชื่อไฟล์ .txt ทั้งหมดในโฟลเดอร์
-$files = glob($folder_path . '/*.txt');
+// วนลูปดึงรายชื่อไฟล์ .txt จากทั้ง 2 โฟลเดอร์
+foreach ($folders as $folder) {
+    $found_files = glob($folder . '/*.txt');
+    if ($found_files) {
+        $files = array_merge($files, $found_files);
+    }
+}
 
 if (empty($files)) {
-    die("ไม่พบไฟล์ .txt ในโฟลเดอร์ " . $folder_path);
+    die("ไม่พบไฟล์ .txt ในโฟลเดอร์ที่ระบุเลยครับ ลองเช็คชื่อโฟลเดอร์อีกทีนะ");
 }
 
 foreach ($files as $file) {
@@ -26,11 +33,11 @@ foreach ($files as $file) {
         // เช็คว่ามีข้อมูลครบ และเป็นประเภท monster หรือ boss_monster
         if (count($parts) >= 4 && ($parts[1] === 'monster' || $parts[1] === 'boss_monster')) {
             
-            // ส่วนที่ 1: ชื่อ Map (เช่น anthell01,0,0) ตัดเอาแค่ชื่อแมพ
+            // ส่วนที่ 1: ชื่อ Map (เช่น prt_fild01,0,0) ตัดเอาแค่ชื่อแมพ
             $map_info = explode(',', $parts[0]);
             $map_name = trim($map_info[0]);
 
-            // ส่วนที่ 4: ID และจำนวน (เช่น 1005,20 หรือ 1289,1,7200000,3600000)
+            // ส่วนที่ 4: ID และจำนวน (เช่น 1002,50 หรือ 1289,1,7200000)
             $mob_info = explode(',', $parts[3]);
             $mob_id = (int)trim($mob_info[0]);
             $amount = isset($mob_info[1]) ? (int)trim($mob_info[1]) : 1; 
@@ -78,5 +85,6 @@ foreach ($chunks as $chunk) {
 file_put_contents($sql_output_file, $sql_content);
 echo "<h3>✅ สำเร็จ!</h3>";
 echo "สร้างไฟล์ <b>" . $sql_output_file . "</b> เรียบร้อยแล้ว<br>";
+echo "อ่านไฟล์จากโฟลเดอร์ dungeons และ fields รวมทั้งหมด <b>" . count($files) . "</b> ไฟล์<br>";
 echo "พบข้อมูลจุดเกิดทั้งหมด <b>" . count($spawn_data) . "</b> รายการ";
 ?>
