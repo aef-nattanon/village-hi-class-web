@@ -7,11 +7,24 @@
 
             <div class="hidden md:flex space-x-8 items-center">
                 <a href="index" class="text-gray-300 hover:text-yellow-400 font-medium transition text-sm uppercase tracking-wide">หน้าแรก</a>
+                <a href="posts" class="text-gray-300 hover:text-yellow-400 font-medium transition text-sm uppercase tracking-wide">ข่าวสาร</a>
                 <a href="register" class="text-gray-300 hover:text-yellow-400 font-medium transition text-sm uppercase tracking-wide">สมัครสมาชิก</a>
                 <a href="download" class="text-gray-300 hover:text-yellow-400 font-medium transition text-sm uppercase tracking-wide">ดาวน์โหลด</a>
                 <a href="info" class="text-gray-300 hover:text-yellow-400 font-medium transition text-sm uppercase tracking-wide">ข้อมูลเซิร์ฟเวอร์</a>
-                
+
                 <?php if (isset($_SESSION['account_id'])): ?>
+                    <?php
+                    // ตรวจสอบสิทธิแอดมิน (group_id = 99)
+                    $is_admin = ($_SESSION['group_id'] == 99);
+                    ?>
+                    <?php if ($is_admin): ?>
+                        <a href="admin_posts.php" class="px-5 py-2 bg-red-600 text-white font-bold rounded-full hover:bg-red-500 transition shadow-[0_0_10px_rgba(239,68,68,0.4)]">
+                            <i class="fas fa-newspaper mr-1"></i> จัดการโพสต์
+                        </a>
+                        <a href="admin_categories.php" class="px-5 py-2 bg-purple-600 text-white font-bold rounded-full hover:bg-purple-500 transition shadow-[0_0_10px_rgba(168,85,247,0.4)]">
+                            <i class="fas fa-folder-open mr-1"></i> หมวดหมู่
+                        </a>
+                    <?php endif; ?>
                     <a href="member" class="px-5 py-2 bg-yellow-500 text-black font-bold rounded-full hover:bg-yellow-400 transition shadow-[0_0_10px_rgba(255,193,7,0.4)]">
                         <i class="fas fa-user-cog mr-1"></i> จัดการไอดี
                     </a>
@@ -31,12 +44,19 @@
     <div id="mobile-menu" class="hidden md:hidden bg-black/95 border-b border-white/10">
         <div class="px-4 pt-2 pb-4 space-y-2 text-center">
             <a href="index" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 hover:text-yellow-400">หน้าแรก</a>
+            <a href="posts" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 hover:text-yellow-400">ข่าวสาร</a>
             <a href="register" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 hover:text-yellow-400">สมัครสมาชิก</a>
             <a href="download" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 hover:text-yellow-400">ดาวน์โหลด</a>
             <a href="info" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 hover:text-yellow-400">ข้อมูลเซิร์ฟเวอร์</a>
-            
+
             <div class="pt-4 border-t border-white/10 mt-2">
                 <?php if (isset($_SESSION['account_id'])): ?>
+                    <?php
+                    // ตรวจสอบสิทธิแอดมิน (account_id = 1)
+                    $is_admin = ($_SESSION['account_id'] == 1);
+                    ?>
+                    <?php if ($is_admin): ?>
+                        <a href="admin_posts.php" class="block px-3 py-2 rounded-md text-base font-bold text-white bg-red-600 hover:bg-red-500 mx-10 mb-2">จัดการโพสต์</a> <a href="admin_categories.php" class="block px-3 py-2 rounded-md text-base font-bold text-white bg-purple-600 hover:bg-purple-500 mx-10 mb-2">จัดการหมวดหมู่</a> <?php endif; ?>
                     <a href="member" class="block px-3 py-2 rounded-md text-base font-bold text-black bg-yellow-500 hover:bg-yellow-400 mx-10">จัดการไอดี</a>
                 <?php else: ?>
                     <a href="login" class="block px-3 py-2 rounded-md text-base font-bold text-yellow-400 border border-yellow-500 hover:bg-yellow-500 hover:text-black mx-10">เข้าสู่ระบบ</a>

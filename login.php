@@ -15,13 +15,14 @@ if (isset($_POST['btn_login'])) {
     $password = $_POST['password'];
 
     try {
-        $stmt = $conn->prepare("SELECT account_id, userid, user_pass FROM login WHERE userid = :uid LIMIT 1");
+        $stmt = $conn->prepare("SELECT * FROM login WHERE userid = :uid LIMIT 1");
         $stmt->execute([':uid' => $userid]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row && $row['user_pass'] === md5($password)) {
             $_SESSION['account_id'] = $row['account_id'];
             $_SESSION['userid'] = $row['userid'];
+            $_SESSION['group_id'] = $row['group_id'];
 
             $chk_alert = "
                 Swal.fire({
@@ -38,12 +39,15 @@ if (isset($_POST['btn_login'])) {
         } else {
             $chk_alert = "Swal.fire({icon: 'error', title: 'เข้าสู่ระบบไม่สำเร็จ', text: 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', confirmButtonColor: '#ffc107', background: '#11151c', color: '#fff'});";
         }
-    } catch (PDOException $e) { echo "Error: " . $e->getMessage(); }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,10 +57,25 @@ if (isset($_POST['btn_login'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #050505; }
-        .mro-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://wallpaperaccess.com/full/1138072.jpg') no-repeat center center; background-size: cover; filter: blur(3px) brightness(0.4); z-index: -2; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #050505;
+        }
+
+        .mro-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://wallpaperaccess.com/full/1138072.jpg') no-repeat center center;
+            background-size: cover;
+            filter: blur(3px) brightness(0.4);
+            z-index: -2;
+        }
     </style>
 </head>
+
 <body class="flex items-center justify-center min-h-screen">
 
     <?php include 'menu.php'; ?>
@@ -70,7 +89,7 @@ if (isset($_POST['btn_login'])) {
                 <h2 class="text-3xl font-extrabold text-white uppercase tracking-wider"><i class="fas fa-user-lock text-yellow-500 mr-2"></i> Login</h2>
                 <p class="text-gray-400 text-sm mt-2">เข้าสู่ระบบเพื่อจัดการตัวละคร</p>
             </div>
-            
+
             <form action="" method="POST" class="space-y-6">
                 <div>
                     <label class="block text-gray-400 text-sm font-bold mb-2">Username</label>
@@ -103,6 +122,9 @@ if (isset($_POST['btn_login'])) {
         </div>
     </div>
 
-    <script><?php echo $chk_alert; ?></script>
+    <script>
+        <?php echo $chk_alert; ?>
+    </script>
 </body>
+
 </html>

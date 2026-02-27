@@ -31,6 +31,38 @@ $castle_map = [
     19 => 'Bamboo Grove',
 ];
 
+// Panel config by slug (color theme per top-level category)
+$panel_cfg = [
+    'update-patches'   => ['border' => 'border-blue-500', 'text' => 'text-blue-400', 'badge' => 'bg-blue-600', 'icon' => 'fa-sync',      'glow' => 'text-blue-500',  'hover' => 'group-hover/item:text-blue-400'],
+    'event-activities' => ['border' => 'border-red-500',  'text' => 'text-red-400',  'badge' => 'bg-red-600',  'icon' => 'fa-gift',       'glow' => 'text-red-500',   'hover' => 'group-hover/item:text-red-400'],
+];
+$default_cfg =             ['border' => 'border-gold',    'text' => 'text-gold',     'badge' => 'bg-yellow-600','icon' => 'fa-newspaper',  'glow' => 'text-yellow-500','hover' => 'group-hover/item:text-gold'];
+
+$tag_color_map = [
+    'update' => 'bg-blue-600',  'fix'   => 'bg-indigo-600', 'maint' => 'bg-slate-500',
+    'event'  => 'bg-red-600',   'hot'   => 'bg-rose-500',   'new'   => 'bg-green-600',
+    'patch'  => 'bg-cyan-600',  'news'  => 'bg-purple-600', 'sale'  => 'bg-orange-500',
+];
+
+// Fetch top-level categories + their latest posts for homepage
+$panels = [];
+try {
+    $stmt_cats = $conn->prepare("SELECT id, name, slug FROM web_post_categories WHERE parent_id IS NULL ORDER BY id ASC");
+    $stmt_cats->execute();
+    $top_cats = $stmt_cats->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($top_cats as $tc) {
+        $stmt_p = $conn->prepare("
+            SELECT p.id, p.title, p.created_at, c.slug AS cat_slug
+            FROM web_posts p
+            JOIN web_post_categories c ON p.category_id = c.id
+            WHERE p.status = 'published' AND (c.id = :cid OR c.parent_id = :cid2)
+            ORDER BY p.created_at DESC LIMIT 5
+        ");
+        $stmt_p->execute([':cid' => $tc['id'], ':cid2' => $tc['id']]);
+        $panels[] = ['cat' => $tc, 'posts' => $stmt_p->fetchAll(PDO::FETCH_ASSOC)];
+    }
+} catch (PDOException $e) {}
+
 try {
     // 1. Online Count
     $stmt = $conn->query("SELECT count(*) as total FROM `char` WHERE online = 1");
@@ -217,56 +249,43 @@ try {
 
             <div class="w-full lg:w-8/12 px-4">
 
-                <div class="bg-panel border border-white/10 rounded-xl p-6 mb-6 shadow-xl relative overflow-hidden group">
+                <?php foreach ($panels as $idx => $panel):
+                    $slug = $panel['cat']['slug'];
+                    $cfg  = $panel_cfg[$slug] ?? $default_cfg;
+                    $is_last = ($idx === count($panels) - 1);
+                ?>
+                <div class="bg-panel border border-white/10 rounded-xl p-6 <?php echo $is_last ? 'mb-8' : 'mb-6'; ?> shadow-xl relative overflow-hidden group">
                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fas fa-sync fa-5x text-blue-500"></i>
+                        <i class="fas <?php echo $cfg['icon']; ?> fa-5x <?php echo $cfg['glow']; ?>"></i>
                     </div>
-                    <div class="flex justify-between items-center border-b-2 border-blue-500 pb-3 mb-5 relative z-10">
-                        <h3 class="text-xl font-bold uppercase text-blue-400"><i class="fas fa-sync mr-2"></i> Update Patches</h3>
-                        <a href="#" class="text-xs text-gray-400 hover:text-white transition">ดูทั้งหมด <i class="fas fa-chevron-right text-[10px]"></i></a>
+                    <div class="flex justify-between items-center border-b-2 <?php echo $cfg['border']; ?> pb-3 mb-5 relative z-10">
+                        <h3 class="text-xl font-bold uppercase <?php echo $cfg['text']; ?>">
+                            <i class="fas <?php echo $cfg['icon']; ?> mr-2"></i>
+                            <?php echo htmlspecialchars($panel['cat']['name']); ?>
+                        </h3>
+                        <a href="posts" class="text-xs text-gray-400 hover:text-white transition">ดูทั้งหมด <i class="fas fa-chevron-right text-[10px]"></i></a>
                     </div>
 
                     <div class="space-y-0 relative z-10">
-                        <a href="#" class="flex items-center py-3 border-b border-white/10 hover:bg-white/5 transition px-2 rounded group/item">
-                            <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-3 min-w-[60px] text-center">UPDATE</span>
-                            <span class="text-gray-300 group-hover/item:text-blue-400 transition">เปิดให้บริการเต็มรูปแบบแล้ววันนี้! (Grand Opening)</span>
-                            <span class="ml-auto text-xs text-gray-500">31/01</span>
-                        </a>
-                        <a href="#" class="flex items-center py-3 border-b border-white/10 hover:bg-white/5 transition px-2 rounded group/item">
-                            <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-3 min-w-[60px] text-center">FIX</span>
-                            <span class="text-gray-300 group-hover/item:text-blue-400 transition">แก้ไขบัคสกิล Bowling Bash และปรับสมดุล Monster</span>
-                            <span class="ml-auto text-xs text-gray-500">29/01</span>
-                        </a>
-                        <a href="#" class="flex items-center py-3 hover:bg-white/5 transition px-2 rounded group/item">
-                            <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-3 min-w-[60px] text-center">MAINT</span>
-                            <span class="text-gray-300 group-hover/item:text-blue-400 transition">ปิดปรับปรุงเซิร์ฟเวอร์ประจำสัปดาห์</span>
-                            <span class="ml-auto text-xs text-gray-500">28/01</span>
-                        </a>
+                        <?php if (empty($panel['posts'])): ?>
+                            <p class="text-gray-500 text-sm py-3">ยังไม่มีข่าวสาร</p>
+                        <?php else: ?>
+                            <?php foreach ($panel['posts'] as $pi => $post):
+                                $cat_slug     = $post['cat_slug'];
+                                $badge_cls    = $tag_color_map[$cat_slug] ?? $cfg['badge'];
+                                $badge_label  = strtoupper($cat_slug);
+                                $is_last_post = ($pi === count($panel['posts']) - 1);
+                            ?>
+                            <a href="post_view?id=<?php echo $post['id']; ?>" class="flex items-center py-3 <?php echo $is_last_post ? '' : 'border-b border-white/10'; ?> hover:bg-white/5 transition px-2 rounded group/item">
+                                <span class="<?php echo $badge_cls; ?> text-white text-[10px] font-bold px-2 py-0.5 rounded mr-3 min-w-[60px] text-center"><?php echo htmlspecialchars($badge_label); ?></span>
+                                <span class="text-gray-300 <?php echo $cfg['hover']; ?> transition truncate"><?php echo htmlspecialchars($post['title']); ?></span>
+                                <span class="ml-auto text-xs text-gray-500 shrink-0 pl-2"><?php echo date('d/m', strtotime($post['created_at'])); ?></span>
+                            </a>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
-
-                <div class="bg-panel border border-white/10 rounded-xl p-6 mb-8 shadow-xl relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                        <i class="fas fa-gift fa-5x text-red-500"></i>
-                    </div>
-                    <div class="flex justify-between items-center border-b-2 border-red-500 pb-3 mb-5 relative z-10">
-                        <h3 class="text-xl font-bold uppercase text-red-400"><i class="fas fa-gift mr-2"></i> Event Activities</h3>
-                        <a href="#" class="text-xs text-gray-400 hover:text-white transition">ดูทั้งหมด <i class="fas fa-chevron-right text-[10px]"></i></a>
-                    </div>
-
-                    <div class="space-y-0 relative z-10">
-                        <a href="#" class="flex items-center py-3 border-b border-white/10 hover:bg-white/5 transition px-2 rounded group/item">
-                            <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-3 min-w-[60px] text-center">EVENT</span>
-                            <span class="text-gray-300 group-hover/item:text-red-400 transition">กิจกรรม Level Up รับไอเทมฟรีไม่อั้น</span>
-                            <span class="ml-auto text-xs text-gray-500">30/01</span>
-                        </a>
-                        <a href="#" class="flex items-center py-3 hover:bg-white/5 transition px-2 rounded group/item">
-                            <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-3 min-w-[60px] text-center">HOT</span>
-                            <span class="text-gray-300 group-hover/item:text-red-400 transition">Guild War ชิงเงินรางวัล 10,000 บาท ครั้งที่ 1</span>
-                            <span class="ml-auto text-xs text-gray-500">25/01</span>
-                        </a>
-                    </div>
-                </div>
+                <?php endforeach; ?>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
