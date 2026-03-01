@@ -1,0 +1,5 @@
+001 2569-03-01-D3D8.dll.thor
+002 2569-03-01-D3D9.dll.thor
+003 2569-03-01-D3Dlmm.dll.thor
+004 2569-03-01-DDraw.dll.thor
+005 2569-03-02-Ro-Costume-A.grf.thor
